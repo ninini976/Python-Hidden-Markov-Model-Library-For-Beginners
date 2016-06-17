@@ -8,5 +8,5 @@ hmm1.set_pi([0.7488,0.2512])
 
 
 ob_seq = ['-','-','-','+']
-p = hmm1.xi(2,0,1,ob_seq)
+p = hmm1.gama(2,1,ob_seq)
 print p

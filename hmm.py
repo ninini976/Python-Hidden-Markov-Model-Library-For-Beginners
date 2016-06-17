@@ -20,14 +20,14 @@ class HMM(object):
 			print "Should give a integer larger than 0"
 		self.pi = []
 		self.observation = []
-		self.ob_map = {} # ob_map is a map from the string notation of observation to the No. of observation
+		self.ob_map = {} # ob_map is a map from the string notation of observation to the No. of observation, For example if we got 2 types of observation ["-","+"], ob_map["-"] = 0, ob_map["+"] = 1
 		self.transition_matrix = []
 		self.observation_matrix = []
 
-	def set_obervation(self, ob):
-		self.observation = ob
+	def set_obervation(self, obs):
+		self.observation = obs
 		count = 0
-		for ob_type in ob:
+		for ob_type in obs:
 			self.ob_map[ob_type] = count
 			count = count + 1
 
@@ -55,10 +55,10 @@ class HMM(object):
 	"""accept a real observation sequence and return a number based observation seq"""
 	"""private_method"""
 	def __transform_ob_seq(self, ob):
-		return_ob = []
+		return_seq = []
 		for ob_type in ob:
-			return_ob.append(self.ob_map[ob_type])
-		return return_ob
+			return_seq.append(self.ob_map[ob_type])
+		return return_seq
 
 	"""observation sequence without a given inner state"""
 	"""P(O|\lambda)"""
@@ -81,7 +81,7 @@ class HMM(object):
 
 	"""possibility of a observation given a deterimined sequence of inner state"""
 	"""P(O|Q,\lambda)"""
-	"""argument: 1.a observation sequence vector of arbitrary length 2.a inner state sequence vector with the same length as first vector"""	
+	"""argument: 1.ob: a observation sequence vector of arbitrary length 2.seq: a inner state sequence vector with the same length as first vector"""	
 	"""return value: possibility (0~1)"""
 	def ob_under_given_true_state_possibility(self, ob, seq):
 		if len(ob) != len(seq):
@@ -97,73 +97,75 @@ class HMM(object):
 	"""P(Q|\lambda)"""
 	"""argument: 1.a TRUE state sequence vector (state denoted by number)"""
 	"""return value: possibility (0~1)"""
-	def state_seq_possibility(self, seq):
-		result = self.pi[seq[0]]
-		for i in range(1,len(seq)):
-			result = result*self.transition_matrix[seq[i-1]][seq[i]]
+	def state_seq_possibility(self, ob):
+		result = self.pi[ob[0]]
+		for i in range(1,len(ob)):
+			result = result*self.transition_matrix[ob[i-1]][ob[i]]
 		return result
 
 
 	"""possibility of the partial observation sequence, O1 O2 .. Ot, and the state Si at time t, given the model \lambda"""
 	"""\alpha_t(i) = P(O_1 O_2 ... O_t, q_t = S_i|\lamda)"""
-	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
 	"""return value: possibility (0~1)"""
-	def alpha(self, t, i, seq):
+	def alpha(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
 		partial_seq = []
 		for x in range(t):
-			partial_seq.append(seq[x])
+			partial_seq.append(ob[x])
 		p_1 = self.observation_possibility(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
  		total = 0
  		for x in range(self.Nostate):
- 			total = total + self.observation_matrix[x][self.ob_map[seq[t]]]
-		p_2 = self.observation_matrix[i][self.ob_map[seq[t]]]/total # P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+ 			total = total + self.observation_matrix[x][self.ob_map[ob[t]]]
+		p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
 		result = p_1 * p_2
 		return result
 
 	"""possibility of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
 	"""\beta_t(i) = P(O_t+1 O_t+2 ... O_T|q_t = S_i, \lamda"""
-	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
 	"""return value: possibility (0~1)"""
-	def beta(self, t, i, seq):
+	def beta(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
-		if t == len(seq) - 1: # This is initialization: \beta_T(i) = 1
+		if t == len(ob) - 1: # This is initialization: \beta_T(i) = 1
 			return 1
 		result = 0
 		for j in range(self.Nostate):
 			#following is the induction procedure
-			result = result + self.transition_matrix[i][j]*self.observation_matrix[i][self.ob_map[seq[t]]]*self.beta(t+1,j,seq)
+			result = result + self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*self.beta(t+1,j,ob)
 		return result
 	"""possibility of being in state S_i at time t, given the observation sequence O and the model \lemda"""
 	"""gama_t(i) = P(q_t = S_i|O,\lamda)"""
-	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
 	"""return value: possibility (0~1)"""
-	def gama(self, t, i, seq):
+	def gama(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
-		alpha = self.alpha(t,i,seq)
-		beta = self.beta(t,i,seq)
-		p = self.observation_possibility(seq)
+		alpha = self.alpha(t,i,ob)
+		beta = self.beta(t,i,ob)
+		p = self.observation_possibility(ob)
 		result = alpha*beta/p
 		return result
 	
 	"""possibility of being in state S_i at time t, and state S_j at time t+1, given the model and the observation sequence"""
 	"""xi_t(i,j) = P(q_t = S_i, q_t+1 = S_j|O,\lamda)"""
-	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2,3. i,j: the state at time t and t+1(should also be 0 BASED INDEX) 4.seq: a list of sequence. The list is a string of notation of observation"""
-	def xi(self, t, i, j, seq):
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2,3. i,j: the state at time t and t+1(should also be 0 BASED INDEX) 4.ob: a list of sequence. The list is a string of notation of observation"""
+	def xi(self, t, i, j, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
 		if j >= self.Nostate:
 			print "j should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
- 		alpha = self.alpha(t,i,seq)
- 		beta = self.beta(t+1,j,seq)
- 		p = self.observation_possibility(seq)
- 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[seq[t+1]]]*beta
+ 		alpha = self.alpha(t,i,ob)
+ 		beta = self.beta(t+1,j,ob)
+ 		p = self.observation_possibility(ob)
+ 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta
  		return result
+
+ 	# def EM_for_a(self, i, j, seq):
