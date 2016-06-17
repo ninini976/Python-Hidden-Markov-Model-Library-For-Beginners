@@ -66,18 +66,18 @@ class HMM(object):
 	"""return value: possibility (0~1)"""
 	def observation_possibility(self, ob):
 		if len(ob) == 0:
-			print "aaa"
+			print "error observation sequence empty"
 		result = 0
 		state_seq = [0]*len(ob)
 		for i in range(0, pow(self.Nostate, len(ob))-1):
-			print state_seq
-			print self.state_seq_possibility(state_seq)
-			print self.ob_under_given_true_state_possibility(ob, state_seq)
+			# print state_seq
+			# print self.state_seq_possibility(state_seq)
+			# print self.ob_under_given_true_state_possibility(ob, state_seq)
 			result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 			increment(state_seq, len(ob)-1, self.Nostate)
-		print state_seq
-		print self.state_seq_possibility(state_seq)
-		print self.ob_under_given_true_state_possibility(ob, state_seq)
+		# print state_seq
+		# print self.state_seq_possibility(state_seq)
+		# print self.ob_under_given_true_state_possibility(ob, state_seq)
 		result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 		return result
 
@@ -115,7 +115,7 @@ class HMM(object):
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
 		partial_seq = []
-		for x in range(t):
+		for x in range(t+1):
 			partial_seq.append(ob[x])
 		p_1 = self.observation_possibility(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
  		total = 0
