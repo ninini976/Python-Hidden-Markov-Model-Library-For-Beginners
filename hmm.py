@@ -109,6 +109,9 @@ class HMM(object):
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
 	"""return value: possibility (0~1)"""
 	def alpha(self, t, i, seq):
+		if i >= self.Nostate:
+			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			return 0
 		partial_seq = []
 		for x in range(t):
 			partial_seq.append(seq[x])
@@ -135,6 +138,32 @@ class HMM(object):
 			#following is the induction procedure
 			result = result + self.transition_matrix[i][j]*self.observation_matrix[i][self.ob_map[seq[t]]]*self.beta(t+1,j,seq)
 		return result
-
+	"""possibility of being in state S_i at time t, given the observation sequence O and the model \lemda"""
+	"""gama_t(i) = P(q_t = S_i|O,\lamda)"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""return value: possibility (0~1)"""
 	def gama(self, t, i, seq):
-				
+		if i >= self.Nostate:
+			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			return 0
+		alpha = self.alpha(t,i,seq)
+		beta = self.beta(t,i,seq)
+		p = self.observation_possibility(seq)
+		result = alpha*beta/p
+		return result
+	
+	"""possibility of being in state S_i at time t, and state S_j at time t+1, given the model and the observation sequence"""
+	"""xi_t(i,j) = P(q_t = S_i, q_t+1 = S_j|O,\lamda)"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2,3. i,j: the state at time t and t+1(should also be 0 BASED INDEX) 4.seq: a list of sequence. The list is a string of notation of observation"""
+	def xi(self, t, i, j, seq):
+		if i >= self.Nostate:
+			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			return 0
+		if j >= self.Nostate:
+			print "j should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			return 0
+ 		alpha = self.alpha(t,i,seq)
+ 		beta = self.beta(t+1,j,seq)
+ 		p = self.observation_possibility(seq)
+ 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[seq[t+1]]]*beta
+ 		return result
