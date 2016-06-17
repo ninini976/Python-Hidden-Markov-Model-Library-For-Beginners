@@ -65,17 +65,19 @@ class HMM(object):
 	"""argument: 1.a observation sequence vector of arbitrary length"""
 	"""return value: possibility (0~1)"""
 	def observation_possibility(self, ob):
+		if len(ob) == 0:
+			print "aaa"
 		result = 0
 		state_seq = [0]*len(ob)
 		for i in range(0, pow(self.Nostate, len(ob))-1):
-			# print state_seq
-			# print self.state_seq_possibility(state_seq)
-			# print self.ob_under_given_true_state_possibility(ob, state_seq)
+			print state_seq
+			print self.state_seq_possibility(state_seq)
+			print self.ob_under_given_true_state_possibility(ob, state_seq)
 			result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 			increment(state_seq, len(ob)-1, self.Nostate)
-		# print state_seq
-		# print self.state_seq_possibility(state_seq)
-		# print self.ob_under_given_true_state_possibility(ob, state_seq)
+		print state_seq
+		print self.state_seq_possibility(state_seq)
+		print self.ob_under_given_true_state_possibility(ob, state_seq)
 		result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 		return result
 
@@ -165,7 +167,16 @@ class HMM(object):
  		alpha = self.alpha(t,i,ob)
  		beta = self.beta(t+1,j,ob)
  		p = self.observation_possibility(ob)
- 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta
+ 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta/p
  		return result
 
- 	# def EM_for_a(self, i, j, seq):
+	# def EM_for_a(self, i, j, seq, error_tolerence):
+	# 	if i >= self.Nostate:
+	# 		print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+	# 		return 0
+	# 	if j >= self.Nostate:
+	# 		print "j should be in the range from 0 to No_of_state-1. Function failed, return 0"
+	# 		return 0
+
+
+
