@@ -20,7 +20,7 @@ class HMM(object):
 			print "Should give a integer larger than 0"
 		self.pi = []
 		self.observation = []
-		self.ob_map = {}
+		self.ob_map = {} # ob_map is a map from the string notation of observation to the No. of observation
 		self.transition_matrix = []
 		self.observation_matrix = []
 
@@ -53,6 +53,7 @@ class HMM(object):
 		return next_state
 
 	"""accept a real observation sequence and return a number based observation seq"""
+	"""private_method"""
 	def __transform_ob_seq(self, ob):
 		return_ob = []
 		for ob_type in ob:
@@ -69,20 +70,20 @@ class HMM(object):
 		for i in range(0, pow(self.Nostate, len(ob))-1):
 			# print state_seq
 			# print self.state_seq_possibility(state_seq)
-			# print self.ob_seq_possibility(ob, state_seq)
-			result = result + self.state_seq_possibility(state_seq)*self.ob_seq_possibility(ob, state_seq)
+			# print self.ob_under_given_true_state_possibility(ob, state_seq)
+			result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 			increment(state_seq, len(ob)-1, self.Nostate)
 		# print state_seq
 		# print self.state_seq_possibility(state_seq)
-		# print self.ob_seq_possibility(ob, state_seq)
-		result = result + self.state_seq_possibility(state_seq)*self.ob_seq_possibility(ob, state_seq)
+		# print self.ob_under_given_true_state_possibility(ob, state_seq)
+		result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
 		return result
 
 	"""possibility of a observation given a deterimined sequence of inner state"""
 	"""P(O|Q,\lambda)"""
 	"""argument: 1.a observation sequence vector of arbitrary length 2.a inner state sequence vector with the same length as first vector"""	
 	"""return value: possibility (0~1)"""
-	def ob_seq_possibility(self, ob, seq):
+	def ob_under_given_true_state_possibility(self, ob, seq):
 		if len(ob) != len(seq):
 			print "The length of observation sequence not equal to inner state sequence"
 		else:
@@ -104,12 +105,36 @@ class HMM(object):
 
 
 	"""possibility of the partial observation sequence, O1 O2 .. Ot, and the state Si at time t, given the model \lambda"""
-	"""\alpha_t(i)"""
-	"""argument: 1. t: the time 2. i: the state at time t 3.seq: a list of sequence"""
+	"""\alpha_t(i) = P(O_1 O_2 ... O_t, q_t = S_i|\lamda)"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""return value: possibility (0~1)"""
 	def alpha(self, t, i, seq):
 		partial_seq = []
-		for i in range(t):
-			partial_seq.append(seq[i])
-		p = self.observation_possibility(partial_seq)
-		print p
+		for x in range(t):
+			partial_seq.append(seq[x])
+		p_1 = self.observation_possibility(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
+ 		total = 0
+ 		for x in range(self.Nostate):
+ 			total = total + self.observation_matrix[x][self.ob_map[seq[t]]]
+		p_2 = self.observation_matrix[i][self.ob_map[seq[t]]]/total # P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		result = p_1 * p_2
+		return result
 
+	"""possibility of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
+	"""\beta_t(i) = P(O_t+1 O_t+2 ... O_T|q_t = S_i, \lamda"""
+	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.seq: a list of sequence. The list is a string of notation of observation"""
+	"""return value: possibility (0~1)"""
+	def beta(self, t, i, seq):
+		if i >= self.Nostate:
+			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			return 0
+		if t == len(seq) - 1: # This is initialization: \beta_T(i) = 1
+			return 1
+		result = 0
+		for j in range(self.Nostate):
+			#following is the induction procedure
+			result = result + self.transition_matrix[i][j]*self.observation_matrix[i][self.ob_map[seq[t]]]*self.beta(t+1,j,seq)
+		return result
+
+	def gama(self, t, i, seq):
+				

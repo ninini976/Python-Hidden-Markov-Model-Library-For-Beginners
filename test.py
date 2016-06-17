@@ -8,4 +8,5 @@ hmm1.set_pi([0.7488,0.2512])
 
 
 ob_seq = ['-','-','-','+']
-p = hmm1.alpha(3,1,ob_seq)
+p = hmm1.beta(2,0,ob_seq)
+print p
