@@ -8,6 +8,9 @@ hmm1.set_transition_matrix([[0.8,0.2],[0,1]])
 hmm1.set_observation_matrix([[0.90,0.10],[0.375,0.625]])
 hmm1.set_pi([0.7488,0.2512])
 
+#........The following part is the code for reading data form file "data"
+
+
 # txt = []
 # file = open('data')
 # for line in file:
@@ -47,9 +50,13 @@ hmm1.set_pi([0.7488,0.2512])
 
 # print len(observations)
 
+# here is an example of obervations
 observations = [['-','-','-'],['-','+'],['-','-','-','+'],['-','-','-','-','-','+']]
 
-# following part is em for a00
+
+
+
+# following part is em for a00(based on the ob sequences in the list observations)
 a00 = 0.6
 out = 0.6
 error_tolerence = 0.000001
@@ -75,6 +82,13 @@ while True:
 print a00
 print out
 
+
+
+
+
+
+
+# This is the grid search on maximizing the product of P for each sequence
 Max_p = 0
 Max = 0
 for i in range(1,101):
