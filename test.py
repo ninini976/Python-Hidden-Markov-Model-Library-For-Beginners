@@ -129,22 +129,24 @@ while True:
 		xi_sum = 0
 		gama_sum = 0
 		gama_sum1 = 0 # fenmu b00
-		gamma_sum_p1 = 0 # fenmu b00
+		gamma_sum_p1 = 0 # fenzi b00
 		gama_sum2 = 0 # fenmu b11
 		gamma_sum_p2 = 0 # fenzi b11
 		for t in range(len(ob)-1):
 			# this is for a00
 			xi_sum = xi_sum + hmm1.xi(t,0,0,ob)
 			gama_sum = gama_sum + hmm1.gama(t,0,ob)
+			
 			# this is for b00
 			gama_sum1 = gama_sum1 + hmm1.gama(t,0,ob)
 			if ob[t] == '-':
 				gamma_sum_p1 = gamma_sum_p1 + hmm1.gama(t,0,ob)
+
 			#this is for b11
 			gama_sum2 = gama_sum2 + hmm1.gama(t,1,ob)
 			if ob[t] == '+':
 				gamma_sum_p2 = gamma_sum_p2 + hmm1.gama(t,1,ob)
-		
+
 		divisor_a00 = divisor_a00 + gama_sum
 		divisor_b00 = divisor_b00 + gama_sum1
 		divisor_b11 = divisor_b11+ gama_sum2
@@ -152,7 +154,7 @@ while True:
 		dividend_b00 = dividend_b00 + gamma_sum_p1
 		dividend_b11 = dividend_b11 + gamma_sum_p2
 		
-	out = dividend_a00/divisor_a00
+	out = dividend_a00 / divisor_a00
 	out1 = dividend_b00 / divisor_b00
 	out2 = dividend_b11 / divisor_b11
 	print out1
