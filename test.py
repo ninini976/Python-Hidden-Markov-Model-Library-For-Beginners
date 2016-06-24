@@ -139,13 +139,14 @@ while True:
 			
 			# this is for b00
 			gama_sum1 = gama_sum1 + hmm1.gama(t,0,ob)
-			if ob[t] == '-':
+			if ob[t] == "-":
 				gamma_sum_p1 = gamma_sum_p1 + hmm1.gama(t,0,ob)
 
 			#this is for b11
 			gama_sum2 = gama_sum2 + hmm1.gama(t,1,ob)
 			if ob[t] == '+':
 				gamma_sum_p2 = gamma_sum_p2 + hmm1.gama(t,1,ob)
+
 
 		divisor_a00 = divisor_a00 + gama_sum
 		divisor_b00 = divisor_b00 + gama_sum1
@@ -158,6 +159,7 @@ while True:
 	out1 = dividend_b00 / divisor_b00
 	out2 = dividend_b11 / divisor_b11
 	print out1
+	print out2
 	if (abs(out - a00) < error_tolerence) and (abs(out1 - b00) < error_tolerence) and (abs(out2 - b11) < error_tolerence):
 		break
 print "result"
