@@ -56,30 +56,30 @@ print len(observations)
 
 
 # following part is em for a00(based on the ob sequences in the list observations)
-a00 = 0.6
-out = 0.6
-error_tolerence = 0.000001
-hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
-while True:
-	a00 = out
-	hmm1.set_transition_matrix([[a00, 1-a00],[0,1]])
-	divisor = 0
-	dividend = 0
-	for ob in observations:
-		xi_sum = 0
-		gama_sum = 0
-		for t in range(len(ob)-1):
-			xi_sum = xi_sum + hmm1.xi(t,0,0,ob)
-			gama_sum = gama_sum + hmm1.gama(t,0,ob)
-		dividend = dividend + xi_sum
-		divisor = divisor + gama_sum
-	out = dividend/divisor
-	print out
-	if abs(out - a00) < error_tolerence:
-		break
+# a00 = 0.6
+# out = 0.6
+# error_tolerence = 0.000001
+# hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
+# while True:
+# 	a00 = out
+# 	hmm1.set_transition_matrix([[a00, 1-a00],[0,1]])
+# 	divisor = 0
+# 	dividend = 0
+# 	for ob in observations:
+# 		xi_sum = 0
+# 		gama_sum = 0
+# 		for t in range(len(ob)-1):
+# 			xi_sum = xi_sum + hmm1.xi(t,0,0,ob)
+# 			gama_sum = gama_sum + hmm1.gama(t,0,ob)
+# 		dividend = dividend + xi_sum
+# 		divisor = divisor + gama_sum
+# 	out = dividend/divisor
+# 	print out
+# 	if abs(out - a00) < error_tolerence:
+# 		break
 
-print a00
-print out
+# print a00
+# print out
 
 
 
@@ -101,3 +101,70 @@ print out
 # 		Max = a
 # 		Max_p_log = log
 # print Max
+
+
+# following part is em for a00(based on the ob sequences in the list observations)
+a00 = 0.6
+out = 0.6
+error_tolerence = 0.001
+hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
+b00 = 1
+b11 = 0.625
+out1 = b00
+out2 = b11
+hmm1.set_observation_matrix([[b00, 1-b00], [1-b11, b11]])
+while True:
+	a00 = out
+	b00 = out1
+	b11 = out2
+	divisor_a00 = 0
+	divisor_b00 = 0
+	divisor_b11 = 0
+	dividend_a00 = 0
+	dividend_b11 = 0
+	dividend_b00 = 0
+	hmm1.set_observation_matrix([[b00, 1-b00], [1-b11, b11]])
+	hmm1.set_transition_matrix([[a00, 1-a00],[0,1]])
+	for ob in observations:
+		xi_sum = 0
+		gama_sum = 0
+		gama_sum1 = 0 # fenmu b00
+		gamma_sum_p1 = 0 # fenmu b00
+		gama_sum2 = 0 # fenmu b11
+		gamma_sum_p2 = 0 # fenzi b11
+		for t in range(len(ob)-1):
+			# this is for a00
+			xi_sum = xi_sum + hmm1.xi(t,0,0,ob)
+			gama_sum = gama_sum + hmm1.gama(t,0,ob)
+			# this is for b00
+			gama_sum1 = gama_sum1 + hmm1.gama(t,0,ob)
+			if ob[t] == '-':
+				gamma_sum_p1 = gamma_sum_p1 + hmm1.gama(t,0,ob)
+			#this is for b11
+			gama_sum2 = gama_sum2 + hmm1.gama(t,1,ob)
+			if ob[t] == '+':
+				gamma_sum_p2 = gamma_sum_p2 + hmm1.gama(t,1,ob)
+		
+		divisor_a00 = divisor_a00 + gama_sum
+		divisor_b00 = divisor_b00 + gama_sum1
+		divisor_b11 = divisor_b11+ gama_sum2
+		dividend_a00 = dividend_a00 + xi_sum
+		dividend_b00 = dividend_b00 + gamma_sum_p1
+		dividend_b11 = dividend_b11 + gamma_sum_p2
+		
+	out = dividend_a00/divisor_a00
+	out1 = dividend_b00 / divisor_b00
+	out2 = dividend_b11 / divisor_b11
+	print out1
+	if (abs(out - a00) < error_tolerence) and (abs(out1 - b00) < error_tolerence) and (abs(out2 - b11) < error_tolerence):
+		break
+print "result"
+print "a"
+print a00
+print out
+print "b00"
+print b00
+print out1
+print "b11"
+print b11
+print out2
