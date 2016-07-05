@@ -40,6 +40,22 @@ class HMM(object):
 	def set_pi(self, pi):
 		self.pi = pi
 
+
+	def print_hmm(self):
+		print "Number of state:"
+		print self.Nostate
+		print "Type of observations:"
+		print self.observation
+		print "Transitionmatrix:"
+		for line in self.transition_matrix:
+			print line
+		print "Observation matrix:"
+		for line in self.observation_matrix:
+			print line
+		print "Initial state:"
+		print self.pi
+
+
 	def give_state(self, year):
 		current_state = self.pi
 		for i in range(0,year):
@@ -138,13 +154,16 @@ class HMM(object):
 		result = 0
 		for j in range(self.Nostate):
 			#following is the induction procedure
+			# if t == len(ob) - 1:
+			# 	result = result + self.transition_matrix[i][j]*1*self.beta(t+1,j,ob) # b_j(O_{T+1}) = 1
+			# else:
 			result = result + self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*self.beta(t+1,j,ob)
 		return result
 	"""possibility of being in state S_i at time t, given the observation sequence O and the model \lemda"""
-	"""gama_t(i) = P(q_t = S_i|O,\lamda)"""
+	"""gamma_t(i) = P(q_t = S_i|O,\lamda)"""
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
 	"""return value: possibility (0~1)"""
-	def gama(self, t, i, ob):
+	def gamma(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
