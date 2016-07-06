@@ -34,8 +34,8 @@ for i in range(0,101):
 		for element in appendob:
 			copy.append(element)
 		print copy
-		print hmm1.observation_possibility(copy)
-		p = p + hmm1.observation_possibility(copy)
+		print hmm1.observation_probability(copy)
+		p = p + hmm1.observation_probability(copy)
 	print p
 	if p > max:
 		max = p
@@ -89,7 +89,7 @@ for ob in observations:
 	for i in range(0,101):
 		pstable = float(i)/100
 		hmm1.set_transition_matrix([[pstable,1-pstable],[0,1]])
-		p = hmm1.observation_possibility(ob)
+		p = hmm1.observation_probability(ob)
 		if p > max:
 			max = p
 			best_pstable = pstable

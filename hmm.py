@@ -79,29 +79,29 @@ class HMM(object):
 	"""observation sequence without a given inner state"""
 	"""P(O|\lambda)"""
 	"""argument: 1.a observation sequence vector of arbitrary length"""
-	"""return value: possibility (0~1)"""
-	def observation_possibility(self, ob):
+	"""return value: probability (0~1)"""
+	def observation_probability(self, ob):
 		if len(ob) == 0:
 			print "error observation sequence empty"
 		result = 0
 		state_seq = [0]*len(ob)
 		for i in range(0, pow(self.Nostate, len(ob))-1):
 			# print state_seq
-			# print self.state_seq_possibility(state_seq)
-			# print self.ob_under_given_true_state_possibility(ob, state_seq)
-			result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
+			# print self.state_seq_probability(state_seq)
+			# print self.ob_under_given_true_state_probability(ob, state_seq)
+			result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
 			increment(state_seq, len(ob)-1, self.Nostate)
 		# print state_seq
-		# print self.state_seq_possibility(state_seq)
-		# print self.ob_under_given_true_state_possibility(ob, state_seq)
-		result = result + self.state_seq_possibility(state_seq)*self.ob_under_given_true_state_possibility(ob, state_seq)
+		# print self.state_seq_probability(state_seq)
+		# print self.ob_under_given_true_state_probability(ob, state_seq)
+		result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
 		return result
 
-	"""possibility of a observation given a deterimined sequence of inner state"""
+	"""probability of a observation given a deterimined sequence of inner state"""
 	"""P(O|Q,\lambda)"""
 	"""argument: 1.ob: a observation sequence vector of arbitrary length 2.seq: a inner state sequence vector with the same length as first vector"""	
-	"""return value: possibility (0~1)"""
-	def ob_under_given_true_state_possibility(self, ob, seq):
+	"""return value: probability (0~1)"""
+	def ob_under_given_true_state_probability(self, ob, seq):
 		if len(ob) != len(seq):
 			print "The length of observation sequence not equal to inner state sequence"
 		else:
@@ -111,21 +111,21 @@ class HMM(object):
 				result = result*self.observation_matrix[seq[i]][ob_seq[i]]
 		return result
 
-	"""possibility of a TRUE state sequence to happen"""
+	"""probability of a TRUE state sequence to happen"""
 	"""P(Q|\lambda)"""
 	"""argument: 1.a TRUE state sequence vector (state denoted by number)"""
-	"""return value: possibility (0~1)"""
-	def state_seq_possibility(self, ob):
+	"""return value: probability (0~1)"""
+	def state_seq_probability(self, ob):
 		result = self.pi[ob[0]]
 		for i in range(1,len(ob)):
 			result = result*self.transition_matrix[ob[i-1]][ob[i]]
 		return result
 
 
-	"""possibility of the partial observation sequence, O1 O2 .. Ot, and the state Si at time t, given the model \lambda"""
+	"""probability of the partial observation sequence, O1 O2 .. Ot, and the state Si at time t, given the model \lambda"""
 	"""\alpha_t(i) = P(O_1 O_2 ... O_t, q_t = S_i|\lamda)"""
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
-	"""return value: possibility (0~1)"""
+	"""return value: probability (0~1)"""
 	def alpha(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
@@ -133,18 +133,18 @@ class HMM(object):
 		partial_seq = []
 		for x in range(t+1):
 			partial_seq.append(ob[x])
-		p_1 = self.observation_possibility(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
+		p_1 = self.observation_probability(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
  		total = 0
  		for x in range(self.Nostate):
  			total = total + self.observation_matrix[x][self.ob_map[ob[t]]]
-		p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
-		result = p_1 * p_2
+		p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # p_2 = P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		result = p_1 * p_2 # P(O_1 O_2 ... O_t, q_t = S_i|\lamda) = P(O_1 O_2 .. O_t|\lamda) * P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
 		return result
 
-	"""possibility of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
+	"""probability of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
 	"""\beta_t(i) = P(O_t+1 O_t+2 ... O_T|q_t = S_i, \lamda"""
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
-	"""return value: possibility (0~1)"""
+	"""return value: probability (0~1)"""
 	def beta(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
@@ -159,21 +159,21 @@ class HMM(object):
 			# else:
 			result = result + self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*self.beta(t+1,j,ob)
 		return result
-	"""possibility of being in state S_i at time t, given the observation sequence O and the model \lemda"""
+	"""probability of being in state S_i at time t, given the observation sequence O and the model \lemda"""
 	"""gamma_t(i) = P(q_t = S_i|O,\lamda)"""
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2. i: the state at time t(should also be 0 BASED INDEX) 3.ob: a list of sequence. The list is a string of notation of observation"""
-	"""return value: possibility (0~1)"""
+	"""return value: probability (0~1)"""
 	def gamma(self, t, i, ob):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
 		alpha = self.alpha(t,i,ob)
 		beta = self.beta(t,i,ob)
-		p = self.observation_possibility(ob)
+		p = self.observation_probability(ob)
 		result = alpha*beta/p
 		return result
 	
-	"""possibility of being in state S_i at time t, and state S_j at time t+1, given the model and the observation sequence"""
+	"""probability of being in state S_i at time t, and state S_j at time t+1, given the model and the observation sequence"""
 	"""xi_t(i,j) = P(q_t = S_i, q_t+1 = S_j|O,\lamda)"""
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2,3. i,j: the state at time t and t+1(should also be 0 BASED INDEX) 4.ob: a list of sequence. The list is a string of notation of observation"""
 	def xi(self, t, i, j, ob):
@@ -185,7 +185,7 @@ class HMM(object):
 			return 0
  		alpha = self.alpha(t,i,ob)
  		beta = self.beta(t+1,j,ob)
- 		p = self.observation_possibility(ob)
+ 		p = self.observation_probability(ob)
  		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta/p
  		return result
 
