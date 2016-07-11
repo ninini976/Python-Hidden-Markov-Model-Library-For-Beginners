@@ -61,7 +61,7 @@ while True: # This is a loop of EM algorithm
 	for ob in observations:
 		gamma_sum2 = 0 # element that will sum up to the numerator of b11
 		gamma_sum_p2 = 0 # element that will sum up to the denominator ot b11
-		for t in range(len(ob)-1):
+		for t in range(len(ob)):
 			#this is for b11
 			gamma_sum2 = gamma_sum2 + hmm1.gamma(t,1,ob)
 			if ob[t] == '+':
