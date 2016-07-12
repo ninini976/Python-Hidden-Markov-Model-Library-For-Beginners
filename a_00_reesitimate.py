@@ -35,7 +35,7 @@ print log
 error_tolerence = 0.00001
 
 # set the starting value
-a00 = 0.99
+a00 = 0.01
 out_a00 = a00
 hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
 

@@ -31,15 +31,15 @@ print log
 error_tolerence = 0.000001
 
 # set the starting value
-a00 = 0.1
+a00 = 0.99
 out_a00 = a00
 hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
 
-b11 = 0.1
+b11 = 0.99
 out_b11 = b11
 hmm1.set_observation_matrix([[0.8, 0.2], [1-b11,b11]])
 
-pi0 = 0.1
+pi0 = 0.99
 out_pi = pi0
 hmm1.set_pi([pi0,1-pi0])
 

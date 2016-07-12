@@ -130,15 +130,23 @@ class HMM(object):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
-		partial_seq = []
-		for x in range(t+1):
-			partial_seq.append(ob[x])
-		p_1 = self.observation_probability(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
- 		total = 0
- 		for x in range(self.Nostate):
- 			total = total + self.observation_matrix[x][self.ob_map[ob[t]]]
-		p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # p_2 = P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
-		result = p_1 * p_2 # P(O_1 O_2 ... O_t, q_t = S_i|\lamda) = P(O_1 O_2 .. O_t|\lamda) * P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		# partial_seq = []
+		# for x in range(t+1):
+		# 	partial_seq.append(ob[x])
+		# p_1 = self.observation_probability(partial_seq) # p_1 = P(O_1 O_2 .. O_t|\lamda)
+ 	# 	total = 0
+ 	# 	for x in range(self.Nostate):
+ 	# 		total = total + self.observation_matrix[x][self.ob_map[ob[t]]]
+		# p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # p_2 = P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		# result = p_1 * p_2 # P(O_1 O_2 ... O_t, q_t = S_i|\lamda) = P(O_1 O_2 .. O_t|\lamda) * P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		result = 0
+		if t == 0:
+			return self.pi[i]*self.observation_matrix[i][self.ob_map[ob[0]]]
+		else:
+			Sum = 0
+			for j in range(self.Nostate):
+				Sum = Sum + self.alpha(t-1,j,ob)*self.transition_matrix[j][i]
+			result = Sum*self.observation_matrix[i][self.ob_map[ob[t]]]
 		return result
 
 	"""probability of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
