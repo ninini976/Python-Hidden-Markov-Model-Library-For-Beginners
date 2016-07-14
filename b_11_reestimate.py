@@ -31,8 +31,10 @@ for ob in observations:
 	log = log + math.log(hmm1.observation_probability(ob))
 print log
 
+
+
 # following part is EM algorithm for a00(based on the ob sequences in the list observations)
-error_tolerence = 0.00001
+error_tolerence = 0.00000001
 
 # set the starting value
 a00 = 0.90 # a00 use the correct value and won't change in this file
