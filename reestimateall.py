@@ -11,7 +11,7 @@ hmm1.set_observation_matrix([[0.8,0.2],[0.3,0.7]])
 hmm1.set_pi([0.85,0.15])
 
 # The following part read simulated data from a file "obs1"
-file = open("obs1")
+file = open("obss2.txt")
 
 observations = []
 
@@ -22,13 +22,10 @@ for ob in observations:
 print len(observations)
 
 
-log = 0
-for ob in observations:		
-	log = log + math.log(hmm1.observation_probability(ob))
-print log
-
 # following part is EM algorithm for a00(based on the ob sequences in the list observations)
-error_tolerence = 0.000001
+# stopping criteria the change in log scaled likelihood is with in 10^(-4)
+error_tolerence = 0.00001
+
 
 # set the starting value
 a00 = 0.99
@@ -48,10 +45,20 @@ pi0 = 0.99
 out_pi = pi0
 hmm1.set_pi([pi0,1-pi0])
 
+last_log = 0
+for ob in observations:		
+	last_log = last_log + math.log(hmm1.observation_probability(ob))
+print last_log
+
+
 print "Starting point:"
 hmm1.print_hmm()
 
+new_log = last_log
+
+round_num = 0
 while True: # This is a loop of EM algorithm
+	round_num = round_num + 1
 	a00 = out_a00
 	b00 = out_b00
 	b11 = out_b11
@@ -68,11 +75,21 @@ while True: # This is a loop of EM algorithm
 	hmm1.set_observation_matrix([[b00, 1-b00], [1-b11,b11]]) # observation matrix is updated each iteration
 	hmm1.set_transition_matrix([[a00, 1-a00],[0,1]]) # transition matrix is updated each iteration
 	hmm1.set_pi([pi0, 1-pi0]) # pi is updated each iteration
-	log = 0
-	for ob in observations:
-		log = log + math.log(hmm1.observation_probability(ob))
-	print log
 	
+	last_log = new_log
+
+	new_log = 0
+	for ob in observations:
+		new_log = new_log + math.log(hmm1.observation_probability(ob))
+	print new_log
+	
+	if new_log < last_log:
+		print "log probability decreases"
+	else:
+		print "log probability increases"
+
+	
+
 
 	for ob in observations:
 		xi_sum = 0 # element that will sum up to the numerator of a00
@@ -111,15 +128,15 @@ while True: # This is a loop of EM algorithm
 	out_b00 = numerator_b00 / denominator_b00
 	out_b11 = numerator_b11 / denominator_b11
 	out_pi = out_pi/len(observations)
-	print out_a00
-	print out_b00
-	print out_b11
-	print out_pi
+	# print out_a00
+	# print out_b00
+	# print out_b11
+	# print out_pi
 	
 	# hmm1.print_hmm()
 	
 
-	if (abs(out_b11 - b11) < error_tolerence) and (abs(out_b11 - b11) < error_tolerence) and (abs(out_pi - pi0) < error_tolerence) and (abs(out_b00 - b00) < error_tolerence):
+	if (abs(new_log - last_log) < error_tolerence) and round_num > 1:
 		break
 
 
