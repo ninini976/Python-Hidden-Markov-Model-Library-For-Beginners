@@ -10,21 +10,52 @@ hmm1.set_transition_matrix([[0.9,0.1],[0,1]])
 hmm1.set_observation_matrix([[0.8,0.2],[0.3,0.7]])
 hmm1.set_pi([0.85,0.15])
 
-# The following part read simulated data from a file "obs1"
-file = open("obss2.txt")
+#........The following part is the code for reading data form file "data"
+
+txt = []
+file = open('data')
+
+
+for line in file: # This for loop splite each line in the data file to 3 numbers and saved in the list "txt"
+	txt.append(line.split())
 
 observations = []
+pt_observation = []
+for i in range (0,5692): # 5692 is the total number of records
+	if i < 5691 and int(txt[i+1][0]) == 1:
+		if int(txt[i][2]) <= 6:
+			pt_observation.append("-")
+		else:
+			pt_observation.append("+")
+		observations.append(pt_observation)
+		pt_observation = []
+	else: 
+		if i < 5691 and int(txt[i+1][0]) != 1:
+			if int(txt[i][2]) <= 6:
+				pt_observation.append("-")
+			else:
+				pt_observation.append("+")
+		else:
+			if int(txt[i][2]) <= 6:
+				pt_observation.append("-")
+			else:
+				pt_observation.append("+")
+			observations.append(pt_observation)
 
-for line in file:
-	observations.append(line.split())
+
+# This is a filter that only filter out those seqences with only one record
+observations = [elem for elem in observations if len(elem)>1]
+
 for ob in observations:
+	ob.remove(ob[0])
 	print ob
+
 print len(observations)
 
 
 # following part is EM algorithm for a00(based on the ob sequences in the list observations)
 # stopping criteria the change in log scaled likelihood is with in 10^(-4)
-error_tolerence = 0.00001
+error_tolerence = 0.000001
 
 
 # set the starting value
@@ -33,10 +64,10 @@ out_a00 = a00
 hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
 
 
-b00 = 0.70
+b00 = 0.99
 out_b00 = b00
 
-b11 = 0.99
+b11 = 0.70
 out_b11 = b11
 
 hmm1.set_observation_matrix([[b00, 1- b00], [1-b11,b11]])
@@ -128,10 +159,10 @@ while True: # This is a loop of EM algorithm
 	out_b00 = numerator_b00 / denominator_b00
 	out_b11 = numerator_b11 / denominator_b11
 	out_pi = out_pi/len(observations)
-	# print out_a00
-	# print out_b00
-	# print out_b11
-	# print out_pi
+	print out_a00
+	print out_b00
+	print out_b11
+	print out_pi
 	
 	# hmm1.print_hmm()
 	

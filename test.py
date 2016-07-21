@@ -42,7 +42,6 @@ hmm1.set_pi([0.85,0.15])
 # 				pt_observation.append("+")
 # 			observations.append(pt_observation)
 
-# ps_array = []
 
 # # This is a filter that only filter out those seqences with only one record
 # observations = [elem for elem in observations if len(elem)>1]
