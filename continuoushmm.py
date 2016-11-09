@@ -62,8 +62,8 @@ for i in range (0,5691): # 5692 is the total number of records
 			pt_time.append((txt[i][1],txt[i][2]))
 			
 			
-print len(observations)
-print len(time)
+# print len(observations)
+# print len(time)
 
 relative_time = []
 for ti in time:
@@ -73,10 +73,20 @@ for ti in time:
 		pt_relative_time.append((int(t[1])-int(start[1]))*12+(int(t[0])-int(start[0])))
 	relative_time.append(pt_relative_time)
 
-for i in range(len(time)):
-	print observations[i]
-	print relative_time[i]
+# for i in range(len(time)):
+# 	print observations[i]
+# 	print relative_time[i]
 
+a = []
+for ob in observations:
+	output = 0
+	for ele in ob:
+		if ele == '8':
+			output = 1
+	if output == 1:
+		print(ob)
+		a.append(ob)
+print len(a)
 
 # # This is a filter that only filter out those seqences with only one record
 # observations = [elem for elem in observations if len(elem)>1]
