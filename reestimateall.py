@@ -46,10 +46,12 @@ for i in range (0,5692): # 5692 is the total number of records
 # This is a filter that only filter out those seqences with only one record
 observations = [elem for elem in observations if len(elem)>1]
 
+# In each sequence, remove the diagnosis stage data and print
 for ob in observations:
 	ob.remove(ob[0])
 	print ob
 
+# Print the number of observation seqences in total
 print len(observations)
 
 
@@ -59,20 +61,20 @@ error_tolerence = 0.000001
 
 
 # set the starting value
-a00 = 0.99
+a00 = 0.95
 out_a00 = a00
 hmm1.set_transition_matrix([[a00,1-a00],[0,1]])
 
 
-b00 = 0.99
+b00 = 0.894
 out_b00 = b00
 
-b11 = 0.70
+b11 = 0.625
 out_b11 = b11
 
 hmm1.set_observation_matrix([[b00, 1- b00], [1-b11,b11]])
 
-pi0 = 0.99
+pi0 = 0.7488
 out_pi = pi0
 hmm1.set_pi([pi0,1-pi0])
 
