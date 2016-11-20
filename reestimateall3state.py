@@ -90,9 +90,9 @@ for ob in observations:
 		if ob[i] == '4+3':
 			ob[i] = '8'
 
-print len(observations)
-for ob in observations:
-	print ob
+# print len(observations)
+# for ob in observations:
+# 	print ob
 
 
 # stopping criteria the change in log scaled likelihood is with in 10^(-4)
@@ -129,8 +129,12 @@ out_pi0 = pi0
 out_pi1 = pi1
 hmm1.set_pi([pi0,pi1, 1-pi0-pi1])
 
+print "start computing initial guess log probablity:"
+
 last_log = 0
-for ob in observations:		
+for i in range(len(observations)):
+	ob = observations[i]
+	print "computing initial guess log probablity " + str(i)		
 	last_log = last_log + math.log(hmm1.observation_probability(ob))
 print last_log
 
@@ -196,56 +200,122 @@ while True: # This is a loop of EM algorithm
 	
 
 
-# 	for ob in observations:
-# 		xi_sum = 0 # element that will sum up to the numerator of a00
-# 		gamma_sum = 0 # element that will sum up to the denominator of a00
-# 		gamma_sum1 = 0 # element that will sum up to the numerator of b00
-# 		gamma_sum_p1 = 0 # element that will sum up to the denominator ot b00
-# 		gamma_sum2 = 0 # element that will sum up to the numerator of b11
-# 		gamma_sum_p2 = 0 # element that will sum up to the denominator ot b11
-# 		for t in range(len(ob)-1):
-# 			# this is for a00
-# 			xi_sum = xi_sum + hmm1.xi(t,0,0,ob)
-# 			gamma_sum = gamma_sum + hmm1.gamma(t,0,ob)
-# 		for t in range(len(ob)):	
-# 			# this is for b00
-# 			gamma_sum1 = gamma_sum1 + hmm1.gamma(t,0,ob)
-# 			if ob[t] == "-":
-# 				gamma_sum_p1 = gamma_sum_p1 + hmm1.gamma(t,0,ob)
+	for i in range(len(observations)):
+		
+		ob = observations[i]
+		print "reestimate process " + str(i)
+		# element that will sum to denominator or numerator for each observation sequence
+		sub_denominator_a00 = 0
+		sub_denominator_a01 = 0
+		sub_denominator_a11 = 0
+		sub_denominator_b00 = 0
+		sub_denominator_b01 = 0
+		sub_denominator_b10 = 0
+		sub_denominator_b11 = 0
+		sub_denominator_b20 = 0
+		sub_denominator_b21 = 0
+		sub_numerator_a00 = 0
+		sub_numerator_a01 = 0
+		sub_numerator_a11 = 0
+		sub_numerator_b00 = 0
+		sub_numerator_b01 = 0
+		sub_numerator_b10 = 0
+		sub_numerator_b11 = 0
+		sub_numerator_b20 = 0
+		sub_numerator_b21 = 0
 
-# 			# this is for b11
-# 			gamma_sum2 = gamma_sum2 + hmm1.gamma(t,1,ob)
-# 			if ob[t] == '+':
-# 				gamma_sum_p2 = gamma_sum_p2 + hmm1.gamma(t,1,ob)	
+
+		for t in range(len(ob)-1):
+			# this is for a00
+			sub_numerator_a00 += hmm1.xi(t,0,0,ob)
+			sub_denominator_a00 += hmm1.gamma(t,0,ob)
+
+			# this is for a01
+			sub_numerator_a01 += hmm1.xi(t,0,1,ob)
+			sub_denominator_a01 += hmm1.gamma(t,0,ob)
+
+			# this is for a11
+			sub_numerator_a11 += hmm1.xi(t,1,1,ob)
+			sub_denominator_a11 += hmm1.gamma(t,1,ob)			
+
+		for t in range(len(ob)):	
+			# this is for b00
+			sub_denominator_b00 += hmm1.gamma(t,0,ob)
+			if ob[t] == "6":
+				sub_numerator_b00 += hmm1.gamma(t,0,ob)
+
+			# this is for b01
+			sub_denominator_b01 += hmm1.gamma(t,0,ob)
+			if ob[t] == "3+4":
+				sub_numerator_b01 += hmm1.gamma(t,0,ob)
+
+			# this is for b10
+			sub_denominator_b10 += hmm1.gamma(t,1,ob)
+			if ob[t] == "6":
+				sub_numerator_b10 += hmm1.gamma(t,1,ob)
+
+			# this is for b11
+			sub_denominator_b11 += hmm1.gamma(t,1,ob)
+			if ob[t] == "3+4":
+				sub_numerator_b11 += hmm1.gamma(t,1,ob)
+
+			# this is for b20
+			sub_denominator_b20 += hmm1.gamma(t,2,ob)
+			if ob[t] == "6":
+				sub_numerator_b20 += hmm1.gamma(t,2,ob)
+ 			
+			# this is for b21
+			sub_denominator_b21 += hmm1.gamma(t,2,ob)
+			if ob[t] == "3+4":
+				sub_numerator_b21 += hmm1.gamma(t,2,ob)
 
 		
-
-# 		denominator_a00 = denominator_a00 + gamma_sum
-# 		denominator_b00 = denominator_b00 + gamma_sum1
-# 		denominator_b11 = denominator_b11+ gamma_sum2
-# 		numerator_a00 = numerator_a00 + xi_sum
-# 		numerator_b00 = numerator_b00 + gamma_sum_p1
-# 		numerator_b11 = numerator_b11 + gamma_sum_p2
+		denominator_a00 += sub_denominator_a00
+		denominator_a01 += sub_denominator_a01
+		denominator_a11 += sub_denominator_a11
+		denominator_b00 += sub_denominator_b00
+		denominator_b01 += sub_denominator_b01
+		denominator_b10 += sub_denominator_b10
+		denominator_b11 += sub_denominator_b11
+		denominator_b20 += sub_denominator_b20
+		denominator_b21 += sub_denominator_b21
+		numerator_a00 += sub_numerator_a00
+		numerator_a01 += sub_numerator_a01
+		numerator_a11 += sub_numerator_a11
+		numerator_b00 += sub_numerator_b00
+		numerator_b01 += sub_numerator_b01
+		numerator_b10 += sub_numerator_b10
+		numerator_b11 += sub_numerator_b11
+		numerator_b20 += sub_numerator_b20
+		numerator_b21 += sub_numerator_b21
 		
-# 		out_pi0 = out_pi0 + hmm1.gamma(0,0,ob)
+		out_pi0 += hmm1.gamma(0,0,ob)
+		out_pi1 += hmm1.gamma(0,1,ob)
 
-# 	out_a00 = numerator_a00 / denominator_a00
-# 	out_b00 = numerator_b00 / denominator_b00
-# 	out_b11 = numerator_b11 / denominator_b11
-# 	out_pi0 = out_pi0/len(observations)
-# 	print out_a00
-# 	print out_b00
-# 	print out_b11
-# 	print out_pi0
+	out_a00 = numerator_a00 / denominator_a00
+	out_a01 = numerator_a01 / denominator_a01
+	out_a11 = numerator_a11 / denominator_a11
+	out_b00 = numerator_b00 / denominator_b00
+	out_b01 = numerator_b01 / denominator_b01
+	out_b10 = numerator_b10 / denominator_b10
+	out_b11 = numerator_b11 / denominator_b11
+	out_b20 = numerator_b20 / denominator_b20
+	out_b21 = numerator_b21 / denominator_b21
+
+	out_pi0 = out_pi0/len(observations)
+	out_pi1 = out_pi1/len(observations)
 	
-# 	# hmm1.print_hmm()
+	hmm1.print_hmm()
 	
 
 # 	if (abs(new_log - last_log) < error_tolerence) and round_num > 1:
 # 		break
 
 
-# print "result"
+print "result:"
+
+hmm1.print_hmm()
+
 # print "a"
 # print a00
 # print out_a00

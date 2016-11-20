@@ -81,20 +81,29 @@ class HMM(object):
 	"""argument: 1.a observation sequence vector of arbitrary length"""
 	"""return value: probability (0~1)"""
 	def observation_probability(self, ob):
-		if len(ob) == 0:
-			print "error observation sequence empty"
+		# old brute force method
+
+		# if len(ob) == 0:
+		# 	print "error observation sequence empty"
+		# result = 0
+		# state_seq = [0]*len(ob)
+		# for i in range(0, pow(self.Nostate, len(ob))-1):
+		# 	# print state_seq
+		# 	# print self.state_seq_probability(state_seq)
+		# 	# print self.ob_under_given_true_state_probability(ob, state_seq)
+		# 	result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
+		# 	increment(state_seq, len(ob)-1, self.Nostate)
+		# # print state_seq
+		# # print self.state_seq_probability(state_seq)
+		# # print self.ob_under_given_true_state_probability(ob, state_seq)
+		# result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
+		# return result
+
+
+		# new alpha pass method
 		result = 0
-		state_seq = [0]*len(ob)
-		for i in range(0, pow(self.Nostate, len(ob))-1):
-			# print state_seq
-			# print self.state_seq_probability(state_seq)
-			# print self.ob_under_given_true_state_probability(ob, state_seq)
-			result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
-			increment(state_seq, len(ob)-1, self.Nostate)
-		# print state_seq
-		# print self.state_seq_probability(state_seq)
-		# print self.ob_under_given_true_state_probability(ob, state_seq)
-		result = result + self.state_seq_probability(state_seq)*self.ob_under_given_true_state_probability(ob, state_seq)
+		for i in range(len(self.observation)):
+			result += self.alpha(len(ob)-1,i,ob)
 		return result
 
 	"""probability of a observation given a deterimined sequence of inner state"""
