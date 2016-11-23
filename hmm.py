@@ -23,6 +23,8 @@ class HMM(object):
 		self.ob_map = {} # ob_map is a map from the string notation of observation to the No. of observation, For example if we got 2 types of observation ["-","+"], ob_map["-"] = 0, ob_map["+"] = 1
 		self.transition_matrix = []
 		self.observation_matrix = []
+		self.alpha_dict = {}
+		self.beta_dict = {}
 
 	def set_obervation(self, obs):
 		self.observation = obs
@@ -40,6 +42,11 @@ class HMM(object):
 	def set_pi(self, pi):
 		self.pi = pi
 
+	def clear_alpha_dict(self):
+		self.alpha_dict = {}
+
+	def clear_beta_dict(self):
+		self.beta_dict = {}
 
 	def print_hmm(self):
 		print "Number of state:"
@@ -148,14 +155,18 @@ class HMM(object):
  	# 		total = total + self.observation_matrix[x][self.ob_map[ob[t]]]
 		# p_2 = self.observation_matrix[i][self.ob_map[ob[t]]]/total # p_2 = P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
 		# result = p_1 * p_2 # P(O_1 O_2 ... O_t, q_t = S_i|\lamda) = P(O_1 O_2 .. O_t|\lamda) * P(q_t = S_i|O_1 O_2 .. O_t, \lamda)
+		if (str(ob[:t+1]),i) in self.alpha_dict:
+			return self.alpha_dict[(str(ob[:t+1]),i)]
 		result = 0
 		if t == 0:
-			return self.pi[i]*self.observation_matrix[i][self.ob_map[ob[0]]]
+			self.alpha_dict[((str(ob[:t+1]),i))] = self.pi[i]*self.observation_matrix[i][self.ob_map[ob[0]]]
+			return self.alpha_dict[((str(ob[:t+1]),i))]
 		else:
 			Sum = 0
 			for j in range(self.Nostate):
 				Sum = Sum + self.alpha(t-1,j,ob)*self.transition_matrix[j][i]
 			result = Sum*self.observation_matrix[i][self.ob_map[ob[t]]]
+			self.alpha_dict[((str(ob[:t+1]),i))] = result
 		return result
 
 	"""probability of partial observation sequence from t+1 to the end, given the state S_i at time t and the model \lamda"""
@@ -166,7 +177,11 @@ class HMM(object):
 		if i >= self.Nostate:
 			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
 			return 0
+		if (str(ob[t+1:]),i) in self.beta_dict:
+			return self.beta_dict[(str(ob[t+1:]),i)]
+
 		if t == len(ob) - 1: # This is initialization: \beta_T(i) = 1
+			self.beta_dict[(str(ob[t+1:]),i)] = 1
 			return 1
 		result = 0
 		for j in range(self.Nostate):
@@ -175,6 +190,7 @@ class HMM(object):
 			# 	result = result + self.transition_matrix[i][j]*1*self.beta(t+1,j,ob) # b_j(O_{T+1}) = 1
 			# else:
 			result = result + self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*self.beta(t+1,j,ob)
+			self.beta_dict[(str(ob[t+1:]),i)] = result
 		return result
 	"""probability of being in state S_i at time t, given the observation sequence O and the model \lemda"""
 	"""gamma_t(i) = P(q_t = S_i|O,\lamda)"""

@@ -91,6 +91,9 @@ new_log = last_log
 
 round_num = 0
 while True: # This is a loop of EM algorithm
+	hmm1.clear_alpha_dict()
+	hmm1.clear_beta_dict()
+	
 	round_num = round_num + 1
 	a00 = out_a00
 	b00 = out_b00
@@ -161,10 +164,10 @@ while True: # This is a loop of EM algorithm
 	out_b00 = numerator_b00 / denominator_b00
 	out_b11 = numerator_b11 / denominator_b11
 	out_pi = out_pi/len(observations)
-	print out_a00
-	print out_b00
-	print out_b11
-	print out_pi
+	# print out_a00
+	# print out_b00
+	# print out_b11
+	# print out_pi
 	
 	# hmm1.print_hmm()
 	

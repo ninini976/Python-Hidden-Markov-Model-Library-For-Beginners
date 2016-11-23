@@ -90,6 +90,17 @@ for ob in observations:
 		if ob[i] == '4+3':
 			ob[i] = '8'
 
+# This is a filter that only filter out those seqences with only one record
+observations = [elem for elem in observations if len(elem)>1]
+
+# In each sequence, remove the diagnosis stage data and print
+for ob in observations:
+	ob.remove(ob[0])
+	print ob
+
+# Print the number of observation seqences in total
+print len(observations)
+
 # print len(observations)
 # for ob in observations:
 # 	print ob
@@ -146,6 +157,8 @@ new_log = last_log
 
 round_num = 0
 while True: # This is a loop of EM algorithm
+	hmm1.clear_alpha_dict()
+	hmm1.clear_beta_dict()
 	round_num = round_num + 1
 	#update parameters in each iteration
 	a00 = out_a00
@@ -203,7 +216,7 @@ while True: # This is a loop of EM algorithm
 	for i in range(len(observations)):
 		
 		ob = observations[i]
-		print "reestimate process " + str(i)
+		# print "reestimate process " + str(i)
 		# element that will sum to denominator or numerator for each observation sequence
 		sub_denominator_a00 = 0
 		sub_denominator_a01 = 0
@@ -308,8 +321,8 @@ while True: # This is a loop of EM algorithm
 	hmm1.print_hmm()
 	
 
-# 	if (abs(new_log - last_log) < error_tolerence) and round_num > 1:
-# 		break
+	if (abs(new_log - last_log) < error_tolerence) and round_num > 1:
+		break
 
 
 print "result:"
