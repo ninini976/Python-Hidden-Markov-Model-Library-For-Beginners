@@ -109,7 +109,7 @@ class HMM(object):
 
 		# new alpha pass method
 		result = 0
-		for i in range(len(self.observation)):
+		for i in range(self.Nostate):
 			result += self.alpha(len(ob)-1,i,ob)
 		return result
 

@@ -97,21 +97,7 @@ observations = [elem for elem in observations if len(elem)>1]
 for ob in observations:
 	ob.remove(ob[0])
 	print ob
-	
-print len(observations)
 
-for ob in observations:
-	remove = 0
-	for i in range(len(ob)-1):
-		if ob[i] == '8' and ob[i+1] == '3+4':
-			remove = 1
-		elif ob[i] == '3+4' and ob[i+1] == '6':
-			remove = 1
-		elif ob[i] == '8' and ob[i+1] == '6':
-			remove = 1
-	if remove == 1:
-		print(ob)
-		observations.remove(ob)
 # Print the number of observation seqences in total
 print len(observations)
 
@@ -221,6 +207,8 @@ while True: # This is a loop of EM algorithm
 	print new_log
 	if new_log < last_log:
 		print "log probability decreases"
+		print "WARNING!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		break
 	else:
 		print "log probability increases"
 
