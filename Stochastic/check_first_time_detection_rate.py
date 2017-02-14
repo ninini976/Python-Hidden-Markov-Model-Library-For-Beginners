@@ -10,7 +10,7 @@ hmm.set_pi([0.8664,0.1336])
 num_progression = 0
 num_first_detect = 0
 
-for i in range(30):
+for i in range(1000):
 	tss = hmm.gen_true_state_seq(10)
 	print(tss)
 	try:
@@ -25,3 +25,7 @@ for i in range(30):
 			num_progression += 1
 		else:
 			num_progression += 1
+
+print("Number of patients with progression and detected at the first biopsy taken after progression: " + str(num_first_detect))
+print("Number of patients with progression: " + str(num_progression))
+print("First time detection rate:" + str(float(num_first_detect)/num_progression))
