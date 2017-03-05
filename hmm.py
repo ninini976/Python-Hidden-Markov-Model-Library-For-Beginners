@@ -14,10 +14,7 @@ class HMM(object):
 	"""initialization of a HMM object, give argument of No. state"""
 
 	def __init__(self, Nostate):
-		if Nostate > 0 and isinstance (Nostate,(int,long)):
-			self.Nostate = Nostate
-		else:
-			print "Should give a integer larger than 0"
+		self.Nostate = Nostate
 		self.pi = []
 		self.observation = []
 		self.ob_map = {} # ob_map is a map from the string notation of observation to the No. of observation, For example if we got 2 types of observation ["-","+"], ob_map["-"] = 0, ob_map["+"] = 1
@@ -49,18 +46,18 @@ class HMM(object):
 		self.beta_dict = {}
 
 	def print_hmm(self):
-		print "Number of state:"
-		print self.Nostate
-		print "Type of observations:"
-		print self.observation
-		print "Transitionmatrix:"
+		print ("Number of state:")
+		print (self.Nostate)
+		print ("Type of observations:")
+		print (self.observation)
+		print ("Transitionmatrix:")
 		for line in self.transition_matrix:
-			print line
-		print "Observation matrix:"
+			print (line)
+		print ("Observation matrix:")
 		for line in self.observation_matrix:
-			print line
-		print "Initial state:"
-		print self.pi
+			print (line)
+		print ("Initial state:")
+		print (self.pi)
 
 
 	def give_state(self, year):
@@ -119,7 +116,7 @@ class HMM(object):
 	"""return value: probability (0~1)"""
 	def ob_under_given_true_state_probability(self, ob, seq):
 		if len(ob) != len(seq):
-			print "The length of observation sequence not equal to inner state sequence"
+			print ("The length of observation sequence not equal to inner state sequence")
 		else:
 			ob_seq = self.__transform_ob_seq(ob)
 			result = 1
@@ -144,7 +141,7 @@ class HMM(object):
 	"""return value: probability (0~1)"""
 	def alpha(self, t, i, ob):
 		if i >= self.Nostate:
-			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			print ("i should be in the range from 0 to No_of_state-1. Function failed, return 0")
 			return 0
 		# partial_seq = []
 		# for x in range(t+1):
@@ -175,7 +172,7 @@ class HMM(object):
 	"""return value: probability (0~1)"""
 	def beta(self, t, i, ob):
 		if i >= self.Nostate:
-			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			print ("i should be in the range from 0 to No_of_state-1. Function failed, return 0")
 			return 0
 		if (str(ob[t+1:]),i) in self.beta_dict:
 			return self.beta_dict[(str(ob[t+1:]),i)]
@@ -198,7 +195,7 @@ class HMM(object):
 	"""return value: probability (0~1)"""
 	def gamma(self, t, i, ob):
 		if i >= self.Nostate:
-			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			print ("i should be in the range from 0 to No_of_state-1. Function failed, return 0")
 			return 0
 		alpha = self.alpha(t,i,ob)
 		beta = self.beta(t,i,ob)
@@ -211,16 +208,16 @@ class HMM(object):
 	"""argument: 1. t: the time(This is a 0 BASED INDEX. Time starts from 0) 2,3. i,j: the state at time t and t+1(should also be 0 BASED INDEX) 4.ob: a list of sequence. The list is a string of notation of observation"""
 	def xi(self, t, i, j, ob):
 		if i >= self.Nostate:
-			print "i should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			print ("i should be in the range from 0 to No_of_state-1. Function failed, return 0")
 			return 0
 		if j >= self.Nostate:
-			print "j should be in the range from 0 to No_of_state-1. Function failed, return 0"
+			print ("j should be in the range from 0 to No_of_state-1. Function failed, return 0")
 			return 0
- 		alpha = self.alpha(t,i,ob)
- 		beta = self.beta(t+1,j,ob)
- 		p = self.observation_probability(ob)
- 		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta/p
- 		return result
+		alpha = self.alpha(t,i,ob)
+		beta = self.beta(t+1,j,ob)
+		p = self.observation_probability(ob)
+		result = alpha*self.transition_matrix[i][j]*self.observation_matrix[j][self.ob_map[ob[t+1]]]*beta/p
+		return result
 
 	# def EM_for_a(self, i, j, seq, error_tolerence):
 	# 	if i >= self.Nostate:

@@ -49,10 +49,10 @@ observations = [elem for elem in observations if len(elem)>1]
 # In each sequence, remove the diagnosis stage data and print
 for ob in observations:
 	ob.remove(ob[0])
-	print ob
+	print(ob)
 
 # Print the number of observation seqences in total
-print len(observations)
+print(len(observations))
 
 
 # following part is EM algorithm for a00(based on the ob sequences in the list observations)
@@ -81,10 +81,10 @@ hmm1.set_pi([pi0,1-pi0])
 last_log = 0
 for ob in observations:		
 	last_log = last_log + math.log(hmm1.observation_probability(ob))
-print last_log
+print(last_log)
 
 
-print "Starting point:"
+print("Starting point:")
 hmm1.print_hmm()
 
 new_log = last_log
@@ -117,12 +117,12 @@ while True: # This is a loop of EM algorithm
 	new_log = 0
 	for ob in observations:
 		new_log = new_log + math.log(hmm1.observation_probability(ob))
-	print new_log
+	print(new_log)
 	
 	if new_log < last_log:
-		print "log probability decreases"
+		print ("log probability decreases")
 	else:
-		print "log probability increases"
+		print ("log probability increases")
 
 	
 
@@ -176,22 +176,10 @@ while True: # This is a loop of EM algorithm
 		break
 
 
-print "result"
-print "a"
-print a00
-print out_a00
-print "b_00"
-print b00
-print out_b00
-print "b11"
-print b11
-print out_b11
-print "pi0"
-print pi0
-print out_pi
+hmm1.print_hmm()
 
 log = 0
 for ob in observations:
 	log = log + math.log(hmm1.observation_probability(ob))
-print "Total posibility:"
-print log
+print("Total posibility:")
+print(log)
